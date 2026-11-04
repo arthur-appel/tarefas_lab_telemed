@@ -5,7 +5,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import torch
 
 from dataset import X_train, y_train, X_teste, y_teste, media_log_sp, std_log_sp
-from model import RedeCasas, RedeCasasRes, RedeCasasResLN, RedeCasasDrop, RedeCasasResLNDrop
+from model import RedeCasas, RedeCasasRes, RedeCasasResLN, RedeCasasDrop, RedeCasasResLNDrop, RedeCasasBN
 
 n_features = X_train.shape[1]
 criterio = torch.nn.MSELoss()
@@ -19,6 +19,7 @@ experimentos = [
     {"nome": "Modelo 5 (Res+LN)",        "classe": RedeCasasResLN,                  "lr": 0.0010, "epocas": 500},
     {"nome": "Modelo 6 (Drop 0.1)",      "classe": RedeCasasDrop,                   "lr": 0.0010, "epocas": 500},
     {"nome": "Modelo 7 (Res+LN+Drop)",   "classe": RedeCasasResLNDrop,              "lr": 0.0010, "epocas": 500},
+    {"nome": "Modelo BN", "classe": RedeCasasBN, "lr": 0.0010, "epocas": 500},
 
 ]
 

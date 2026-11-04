@@ -12,6 +12,7 @@ class RedeCasas(torch.nn.Module):
         self.linear2 = torch.nn.Linear(in_features=128, out_features=32)
         self.relu2 = torch.nn.ReLU()
 
+
         #saída
         self.saida = torch.nn.Linear(in_features=32, out_features=1)
 
@@ -128,4 +129,21 @@ class RedeCasasResLNDrop(torch.nn.Module):
         x = self.drop(self.relu(x + copia))
 
         x = self.relu(self.refino(x))
+        return self.saida(x)
+
+class RedeCasasBN(torch.nn.Module):
+    def __init__(self, n_entradas):
+        super().__init__()
+        self.linear1 = torch.nn.Linear(n_entradas, 128)
+        self.bn1 = torch.nn.BatchNorm1d(128)
+
+        self.linear2 = torch.nn.Linear(128, 32)
+        self.bn2 = torch.nn.BatchNorm1d(32)
+
+        self.saida = torch.nn.Linear(32, 1)
+        self.relu = torch.nn.ReLU()
+
+    def forward(self, x):
+        x = self.relu(self.bn1(self.linear1(x)))
+        x = self.relu(self.bn2(self.linear2(x)))
         return self.saida(x)
