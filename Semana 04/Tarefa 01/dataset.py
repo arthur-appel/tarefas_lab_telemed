@@ -6,12 +6,12 @@ import torch
 
 # 1. Carregamento, remoções iniciais.
 df = pd.read_csv("Semana 03/Tarefa 02/train.csv").set_index("Id")
-
 cols_indesejadas=['Utilities','Street','Condition2','RoofMatl','Heating','PoolQC','Exterior1st','SaleType']
 df = df.drop(columns=cols_indesejadas)
 
 df["MSSubClass"] = df["MSSubClass"].astype(str) 
-df["GarageYrBlt"] = df["GarageYrBlt"].fillna(0) 
+df["TemGaragem"] = df["GarageYrBlt"].notna().astype(int)
+df["GarageYrBlt"] = df["GarageYrBlt"].fillna(df["YearBuilt"])
 
 
 #2. Mapeando as ordinais (transformar em números.)
@@ -45,10 +45,8 @@ df["CentralAir"] = df["CentralAir"].fillna("N").map(mapa_central_air).fillna(0).
 
 #3. Definindo as colunas
 
-colunas_anos = ["YearBuilt", "YearRemodAdd", "YrSold"] 
-colunas_para_ignorar = colunas_anos + ["GarageYrBlt"]
 
-colunas_numericas = df.select_dtypes(include=[np.number]).drop(columns=colunas_para_ignorar).columns
+colunas_numericas = df.select_dtypes(include=[np.number]).columns
 
 colunas_categoricas = df.select_dtypes(include=['object','category','string']).columns
 
@@ -61,9 +59,7 @@ df_treino, df_teste = train_test_split(df, test_size=0.20, random_state=42)
 
 #calculo das estatisticas (com treino)
 
-medias_anos = df_treino[colunas_anos].mean().round()
 medias_numericas = df_treino[colunas_numericas].mean()
-
 media_z = df_treino[cols_zscore].mean()
 std_z = df_treino[cols_zscore].std()
 
@@ -76,9 +72,6 @@ std_log_sp = log_sp_treino.std()
 #5. Padronização e missing values
 
 #fillando nulos
-df_treino[colunas_anos] = df_treino[colunas_anos].fillna(medias_anos)
-df_teste[colunas_anos] = df_teste[colunas_anos].fillna(medias_anos)
-
 df_treino[colunas_numericas] = df_treino[colunas_numericas].fillna(medias_numericas)
 df_teste[colunas_numericas] = df_teste[colunas_numericas].fillna(medias_numericas)
 
@@ -117,3 +110,4 @@ y_train = torch.tensor(y_treino_df.values, dtype=torch.float32)
 
 X_teste = torch.tensor(X_teste_df.values, dtype=torch.float32)
 y_teste = torch.tensor(y_teste_df.values, dtype=torch.float32)
+
