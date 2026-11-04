@@ -30,7 +30,7 @@ class RedeCasasRes(torch.nn.Module):
     def __init__(self, n_entradas):
         super().__init__()
 
-        # Entrada: projeta de n_entradas (182) para o espaço latente de 128
+        
         self.entrada = torch.nn.Linear(n_entradas, 128)
         self.relu = torch.nn.ReLU()
         
