@@ -1,0 +1,19 @@
+# Ambientes virtuais
+venv/
+.venv/
+env/
+ENV/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+
+# Checkpoints e modelos pesados do PyTorch
+*.pt
+*.pth
+*.bin
+*.onnx
+
+# Dados e datasets pesados (se houver)
+data/
+datasets/
