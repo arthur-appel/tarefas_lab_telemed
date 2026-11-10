@@ -4,6 +4,8 @@ import numpy as np
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 from torchvision.transforms import v2
+from torchvision.models import resnet18, resnet34, resnet50
+import torch.nn as nn
 
 # 1. Carregando os dados crus.
 
@@ -100,12 +102,74 @@ transform_train = v2.Compose([
 ])
 
 
-# 5. Criando o Dataset e o DataLoader
+# 5. Criando o Dataset e o DataLoader, Modelo e o adaptando.
 
 train_dataset = TensorDataset(train_x, train_y)
 train_loader  = DataLoader(train_dataset, batch_size=32, shuffle=True)
+modelo = resnet18(weights=None)
 
-# 6. Aplicando o treinamento da rede.
+modelo.conv1 = nn.Conv2d(
+    in_channels=1,            #1 canal (grayscale)
+    out_channels=64,
+    kernel_size=7,
+    stride=2,
+    padding=3,
+    bias=False
+)
 
-#for imagens, labels in train_loader:
-    #imagens = transform_train(imagens)
+num_features = modelo.fc.in_features
+modelo.fc = nn.Linear(num_features, 5)  #adaptando pra sair as nossas 5 features possiveis
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+modelo = modelo.to(device)
+
+criterio = nn.CrossEntropyLoss()
+otimizador = torch.optim.Adam(modelo.parameters(), lr=0.001)
+
+
+# 6 Aplicando o treinamento da rede.
+num_epocas = 5
+
+print(f"Iniciando o treinamento:\n\n")
+
+for epoca in range (num_epocas):
+    modelo.train()
+    soma_loss = 0.0
+    acertos = 0
+    total = 0
+
+    for batch_idx, (imagens, labels) in enumerate(train_loader):
+        
+        # 6.1 aplicando o flip aleatório (0.5)
+        imagens = transform_train(imagens)
+        
+        # 6.2 passos do treino
+        otimizador.zero_grad()              # 1. zerando gradientes anteriores
+        saidas = modelo(imagens)            # 2. forward pass (chute da rede)
+        loss = criterio(saidas, labels)     # 3. calculando o erro com a loss 
+        loss.backward()                     # 4. backpropagation (calculando derivadas)
+        otimizador.step()                   # 5. atualizando pesos
+
+        # 6.3 estatisticas
+
+        soma_loss += loss.item()
+        _, previstos = torch.max(saidas, dim=1) # pega a classe com maior nota (0 a 4)
+        acertos += (previstos == labels).sum().item()
+        total += labels.size(0)
+
+        if (batch_idx + 1) % 10 == 0:
+            print(f"Época [{epoca+1}/{num_epocas}] | Lote [{batch_idx+1}/{len(train_loader)}] | Loss: {loss.item():.4f}")
+
+    loss_media = soma_loss / len(train_loader)
+    acuracia = (acertos / total) * 100
+    print(f"==> Fim da Época {epoca+1} | Loss Média: {loss_media:.4f} | Acurácia Treino: {acuracia:.2f}%\n")
+
+
+torch.save(modelo.state_dict(), "Semana 04/Tarefa 02/resnet18_raiox.pth")
+
+  
+    
+
+
+
+
