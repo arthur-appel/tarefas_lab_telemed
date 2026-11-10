@@ -1,0 +1,44 @@
+
+Treinamento do modelo (Após 5 Épocas):
+
+Loss Média: 0.2935 | Acurácia Treino: 89.32%
+
+
+Avaliando modelo no conjunto de Teste...
+
+=== RELATÓRIO DE CLASSIFICAÇÃO (CONJUNTO DE TESTE) ===
+                    precision    recall  f1-score   support
+
+       0: COVID-19     0.7480    0.7864    0.7667       838
+   1: Lung-Opacity     0.9293    0.6559    0.7690      1203
+         2: Normal     0.8542    0.9308    0.8909      2039
+3: Viral Pneumonia     0.9460    0.9581    0.9520      1480
+   4: Tuberculosis     0.8632    0.9592    0.9087       980
+
+          accuracy                         0.8722      6540
+         macro avg     0.8681    0.8581    0.8575      6540
+      weighted avg     0.8765    0.8722    0.8690      6540
+
+
+=== ANÁLISE DOS RESULTADOS ===
+
+Visão Geral:
+- Com 5 épocas de treinamento na ResNet-18, o modelo teve 89.18% de acurácia no treino e 87.22% no conjunto de teste (6.540 imagens).
+- A diferença entre treino e teste foi muito pequena (menos de 2%), então o modelo generalizou bem e não decorou os dados de treino.  
+
+Comportamento por Classe:
+- Melhores resultados: Pneumonia Viral (F1: 0.9520) e Tuberculose (F1: 0.9087). 
+-Recall de ~96% nessas duas classes (poucos falsos negativos)
+- Lung-Opacity (Opacidade Pulmonar) teve uma Precisão muito alta (92.93%), mas um Recall baixo (65.59%). quando a rede diz que é Lung-Opacity, quase sempre acerta,
+ mas não detectou cerca de 34% dos casos reais (provavelmente confundiu as manchas com Covid-19 ou casos normais.)
+- Maior dificuldade (COVID-19), menor F1-score (0.7667) e menor precisão (74.80%), menos imagens no dataset (support de 838), seus padrões visuais no raio-X se sobrepõem bastante aos de Opacidade Pulmonar, gera mais falsos positivos.
+
+Média Macro vs. Média Ponderada (Weighted):
+A média ponderada (F1: 0.8690), média macro (F1: 0.8575), isso porque o dataset é desbalanceado e o modelo foi bem justamente nas classes que tem mais imagens (Normal/Viral Pneumonia).    
+
+
+=== COISAS PRA MELHORAR ===
+
+- Aumentar o n de épocas 
+- Aplicar learning rate dinâmica usando scheduler
+- Usar pesos pré treinados ou balancear pesos das classes na CrossEntropyLoss

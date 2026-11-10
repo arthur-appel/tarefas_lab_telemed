@@ -128,44 +128,47 @@ otimizador = torch.optim.Adam(modelo.parameters(), lr=0.001)
 
 
 # 6 Aplicando o treinamento da rede.
-num_epocas = 5
 
-print(f"Iniciando o treinamento:\n\n")
+if __name__ == "__main__":
+    num_epocas = 5
 
-for epoca in range (num_epocas):
-    modelo.train()
-    soma_loss = 0.0
-    acertos = 0
-    total = 0
+    print(f"Iniciando o treinamento:\n\n")
 
-    for batch_idx, (imagens, labels) in enumerate(train_loader):
-        
-        # 6.1 aplicando o flip aleatório (0.5)
-        imagens = transform_train(imagens)
-        
-        # 6.2 passos do treino
-        otimizador.zero_grad()              # 1. zerando gradientes anteriores
-        saidas = modelo(imagens)            # 2. forward pass (chute da rede)
-        loss = criterio(saidas, labels)     # 3. calculando o erro com a loss 
-        loss.backward()                     # 4. backpropagation (calculando derivadas)
-        otimizador.step()                   # 5. atualizando pesos
+    for epoca in range (num_epocas):
+        modelo.train()
+        soma_loss = 0.0
+        acertos = 0
+        total = 0
 
-        # 6.3 estatisticas
+        for batch_idx, (imagens, labels) in enumerate(train_loader):
 
-        soma_loss += loss.item()
-        _, previstos = torch.max(saidas, dim=1) # pega a classe com maior nota (0 a 4)
-        acertos += (previstos == labels).sum().item()
-        total += labels.size(0)
+            imagens, labels = imagens.to(device), labels.to(device)
+            
+            # 6.1 aplicando o flip aleatório (0.5)
+            imagens = transform_train(imagens)
+            
+            # 6.2 passos do treino
+            otimizador.zero_grad()              # 1. zerando gradientes anteriores
+            saidas = modelo(imagens)            # 2. forward pass (chute da rede)
+            loss = criterio(saidas, labels)     # 3. calculando o erro com a loss 
+            loss.backward()                     # 4. backpropagation (calculando derivadas)
+            otimizador.step()                   # 5. atualizando pesos
 
-        if (batch_idx + 1) % 10 == 0:
-            print(f"Época [{epoca+1}/{num_epocas}] | Lote [{batch_idx+1}/{len(train_loader)}] | Loss: {loss.item():.4f}")
+            # 6.3 estatisticas
 
-    loss_media = soma_loss / len(train_loader)
-    acuracia = (acertos / total) * 100
-    print(f"==> Fim da Época {epoca+1} | Loss Média: {loss_media:.4f} | Acurácia Treino: {acuracia:.2f}%\n")
+            soma_loss += loss.item()
+            _, previstos = torch.max(saidas, dim=1) # pega a classe com maior nota (0 a 4)
+            acertos += (previstos == labels).sum().item()
+            total += labels.size(0)
 
+            if (batch_idx + 1) % 10 == 0:
+                print(f"Época [{epoca+1}/{num_epocas}] | Lote [{batch_idx+1}/{len(train_loader)}] | Loss: {loss.item():.4f}")
 
-torch.save(modelo.state_dict(), "Semana 04/Tarefa 02/resnet18_raiox.pth")
+        loss_media = soma_loss / len(train_loader)
+        acuracia = (acertos / total) * 100
+        print(f"==> Fim da Época {epoca+1} | Loss Média: {loss_media:.4f} | Acurácia Treino: {acuracia:.2f}%\n")
+
+    torch.save(modelo.state_dict(), "Semana 04/Tarefa 02/resnet18_raiox.pth")
 
   
     
