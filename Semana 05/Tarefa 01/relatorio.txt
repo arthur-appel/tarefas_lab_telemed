@@ -1,0 +1,37 @@
+O que é embedding?
+
+Embedding é um vetor de números reais, onde cada posição desse vetor guarda uma característica diferente aprendida sobre um dado (pode ser palavra, texto, imagem).
+basicamente o embedding vai representar o significado daquela coisa com base em suas características, dentro de um espaço matemático. as coisas que são parecidas ficam
+mais próximas das outras, e as menos parecidas mais distantes (por terem pesos diferentes no vetor pra cada característica)
+
+Pra que usamos embeddings?
+
+O computador não consegue entender significado das coisas, então a gente usa os embeddings como uma maneira de traduzir o que as palavras/textos/padrões visuais significam, quais
+caracteristicas compartilham e estão presentes naquele dado, mas fazendo isso de maneira numérica. Tendo esses vetores, a gente consegue fazer buscas por similaridade (pela distancia
+do cosseno), agrupar dados parecidos, etcetc...
+
+O que o k mean faz
+
+Ele escolhe k pontos (vetores) e calcula a distância dos outros pontos com base nesses k pontos iniciais. Aí, ele agrupa tudo, com base na distância calculada, e depois ele
+fica num loop de calcular a distancia media de k para os pontos do seu grupo, e reposicionar ele, com isso a gente consegue ir otimizando as distancias e reagrupando tudo, até ficar
+o melhor possível.
+
+
+=== RELATÓRIO DE CLASSIFICAÇÃO DO K-MEANS (K=5) ===
+                    precision    recall  f1-score   support
+
+       0: COVID-19     0.9709    0.9165    0.9429       838
+   1: Lung-Opacity     0.9384    0.8612    0.8981      1203
+         2: Normal     0.9134    0.9676    0.9397      2039
+3: Viral Pneumonia     0.9511    0.9851    0.9678      1480
+   4: Tuberculosis     0.9916    0.9633    0.9772       980
+
+          accuracy                         0.9448      6540
+         macro avg     0.9531    0.9387    0.9452      6540
+      weighted avg     0.9456    0.9448    0.9445      6540
+
+
+aqui precisão é, dos elementos que estão em certo clusters, quantos % estão no grupo que deviam estar (no cluster de covid, tem 97,09% de covid). 
+
+e o recall é, dos casos totais de covid, quantos % foram postos no cluster, ou seja, recuperados (ex: tem 838 casos, só 91,65% desses casos foram recuperados no cluster).
+
