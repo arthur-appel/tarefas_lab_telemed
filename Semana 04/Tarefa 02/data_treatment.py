@@ -49,7 +49,7 @@ def converter_dataset_1canal(arquivo_entrada, arquivo_saida, chunk_size=1000):
                 # deserializa o lote
                 lote = np.frombuffer(raw_bytes, dtype=np.float64).reshape((n_imgs, 224, 224, 3))
                 
-                # aqui é a parte mais importante, pegando apenas o Canal 0 e normaliza entre 0 e 1 em float32
+                # pegando apenas o Canal 0 e normaliza entre 0 e 1 em float32
                 lote_1ch = (lote[:, :, :, 0:1] / 255.0).astype(np.float32)
                 
                 imagens_1ch[i : i + n_imgs] = lote_1ch
@@ -130,7 +130,13 @@ otimizador = torch.optim.Adam(modelo.parameters(), lr=0.001)
 # 6 Aplicando o treinamento da rede.
 
 if __name__ == "__main__":
-    num_epocas = 5
+    num_epocas = 15
+
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        otimizador,
+        T_max=num_epocas,  
+        eta_min=1e-5 #lr minima vai ficar mt baixa (0.00001)
+    )
 
     print(f"Iniciando o treinamento:\n\n")
 
@@ -166,9 +172,12 @@ if __name__ == "__main__":
 
         loss_media = soma_loss / len(train_loader)
         acuracia = (acertos / total) * 100
-        print(f"==> Fim da Época {epoca+1} | Loss Média: {loss_media:.4f} | Acurácia Treino: {acuracia:.2f}%\n")
+        lr_atual = otimizador.param_groups[0]['lr']
+        print(f"==> Fim da Época {epoca+1} | LR: {lr_atual:.6f} | Loss Média: {loss_media:.4f} | Acurácia Treino: {acuracia:.2f}%\n")
 
-    torch.save(modelo.state_dict(), "Semana 04/Tarefa 02/resnet18_raiox.pth")
+        scheduler.step()
+
+    torch.save(modelo.state_dict(), "Semana 04/Tarefa 02/resnet18_raiox_15epocas.pth")
 
   
     

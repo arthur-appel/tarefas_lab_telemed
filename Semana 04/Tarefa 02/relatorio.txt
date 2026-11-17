@@ -1,3 +1,32 @@
+TREINAMENTO DO MODELO (APÓS 15 ÉPOCAS COM SCHEDULER):
+
+Fim da Época 15 | LR: 0.000021 | Loss Média: 0.0578 | Acurácia Treino: 98.05%
+
+
+Avaliando modelo no conjunto de Teste...
+
+=== RELATÓRIO DE CLASSIFICAÇÃO (CONJUNTO DE TESTE) ===
+                    precision    recall  f1-score   support
+
+       0: COVID-19     0.9730    0.9475    0.9601       838
+   1: Lung-Opacity     0.9225    0.8911    0.9066      1203
+         2: Normal     0.9306    0.9539    0.9421      2039
+3: Viral Pneumonia     0.9740    0.9878    0.9809      1480
+   4: Tuberculosis     0.9876    0.9786    0.9831       980
+
+          accuracy                         0.9529      6540
+         macro avg     0.9576    0.9518    0.9545      6540
+      weighted avg     0.9529    0.9529    0.9528      6540
+
+
+Botar o scheduler ajudou muito, tanto no recall quanto na precisão do modelo, aumentar o nro de épocas também foi definitivo
+para isso com certeza. 
+
+
+
+
+
+
 
 Treinamento do modelo (Após 5 Épocas):
 

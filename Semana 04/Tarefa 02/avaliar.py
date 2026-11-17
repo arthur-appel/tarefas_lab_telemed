@@ -22,7 +22,7 @@ transform_test = v2.Compose([
 ])
 
 # 3. carregando os pesos da resnet já treinada (.pth)
-caminho_pesos = "Semana 04/Tarefa 02/resnet18_raiox.pth"
+caminho_pesos = "Semana 04/Tarefa 02/resnet18_raiox_15epocas.pth"
 modelo.load_state_dict(torch.load(caminho_pesos, map_location=device))
 modelo.eval()  
 
